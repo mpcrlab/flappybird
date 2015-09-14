@@ -1,3 +1,4 @@
+function MPCR_FlappyBird
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %------------------------------------------------------%
 %
@@ -10,11 +11,25 @@
 %------------------------------------------------------%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %------------------------------------------------------%
-%Adapted from 
-%Flappy Bird for MATLAB: Mingjing Zhang
+% Locally Competitive Algorithms Demonstration
+% Using natural images data, see:
+% Rozell, Christopher J., et al.
+% "Sparse coding via thresholding and
+% local competition in neural circuits."
+% Neural computation 20.10 (2008): 2526-2563.
+%
 %------------------------------------------------------%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function MPCR_FlappyBird
+
+
+
+
+
+%Adapted from 
+%Flappy Bird for MATLAB
+%by Mingjing Zhang
+
+
 
 clear all 
 clc
@@ -39,6 +54,8 @@ TUBE.WIDTH   = [];            % The 'actual' width of the detection box
 
 GAMEPLAY.RIGHT_X_FIRST_TUBE = [];  % Xcoord of the right edge of the 1st tube
 
+ShowFPS = true;
+SHOWFPS_FRAMES = 5;
 %% Handles
 MainFigureHdl = [];
 MainAxesHdl = [];
@@ -47,6 +64,7 @@ BirdSpriteHdl = [];
 TubeSpriteHdl = [];
 BeginInfoHdl = [];
 FloorSpriteHdl = [];
+ScoreInfoHdl = [];
 GameOverHdl = [];
 FloorAxesHdl = [];
 %% Game Parameters
@@ -103,10 +121,26 @@ Tubes.FrontP = 1;              % 1-3
 Tubes.ScreenX = [300 380 460]-2; % The middle of each tube
 Tubes.VOffset = ceil(rand(1,3)*105); 
 
+Best = 0;
 %% -- Game Logic --
 initVariables();
 initWindow();
+
+if ShowFPS
+    fps_text_handle = text(10,10, 'FPS:60.0', 'Visible', 'off');
+    var_text_handle = text(10,20, '', 'Visible', 'off'); % Display a variable
+    total_frame_update = 0;
+end
+
+% Show flash screen
+CurrentFrameNo = double(0);
+
+fade_time = cumsum([1 3 1]);
+
 pause(0.5);
+
+
+
 
 
 % Main Game
@@ -346,12 +380,19 @@ end
 
         Bird.Angle = 0;
         Score = 0;
+        %TubeLayer.Alpha(GAME.FLOOR_TOP_Y:GAME.RESOLUTION(1), :, :) = true;
         Flags.ResetFloorTexture = true;
         SinYPos = 1;
         Flags.PreGame = true;
-
+%         scrollTubeLayer(GAME.RESOLUTION(2));   % Do it twice to fill the
+%         disp('mhaha');
+%         scrollTubeLayer(GAME.RESOLUTION(2));   % Entire tube layer
         drawToMainCanvas();
         set(MainCanvasHdl, 'CData', MainCanvas);
+%         set(BeginInfoHdl, 'Visible','on');
+%         set(ScoreInfoHdl, 'Visible','off');
+%         set(ScoreInfoBackHdl, 'Visible','off');
+%         set(ScoreInfoForeHdl, 'Visible','off');
         set(GameOverHdl, 'Visible','off');
         set(FloorSpriteHdl, 'CData',Sprites.Floor.CData);
         Tubes.FrontP = 1;              % 1-3
